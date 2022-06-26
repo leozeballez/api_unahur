@@ -1,16 +1,17 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const materia = sequelize.define('materia', {
+  const materias = sequelize.define('materias', {
     nombre: DataTypes.STRING,
     id_aula: DataTypes.INTEGER
   }, {});
-  materia.associate = function(models) {
+
+  materias.associate = function(models) {
     // associations can be defined here
-    materia.hasMany(models.aula
+    materias.belongsTo(models.aula
       ,{
         as : 'Aula-Relacionada',
         foreignKey: 'id_aula'
       })
   };
-  return materia;
+  return materias;
 };
