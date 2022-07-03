@@ -11,6 +11,19 @@ router.get("/", (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
+router.get("/paginadas/", (req, res) => {
+  let pagina = req.query.pagina === undefined? 0 : +req.query.pagina; //esto se hizo así porque devuelve un string en vez de un entero
+  let cantidad = req.query.cantidad === undefined? 0 : +req.query.cantidad;
+
+  models.aula
+    .findAll({
+      attributes: ["id", "nombre"],
+      offset: pagina * cantidad, limit: cantidad
+    })
+    .then(aulas => res.send(aulas))
+    .catch(() => res.sendStatus(500));
+});
+
 router.post("/", (req, res) => {
   models.aula
     .create({ nombre: req.body.nombre })

@@ -3,10 +3,22 @@ var router = express.Router();
 var models = require("../models");
 
 router.get("/", (req, res) => {
-  console.log("Esto es un mensaje para ver en consola");
   models.carrera
     .findAll({
       attributes: ["id", "nombre"]
+    })
+    .then(carreras => res.send(carreras))
+    .catch(() => res.sendStatus(500));
+});
+
+router.get("/paginadas/", (req, res) => {
+  let pagina = req.query.pagina === undefined? 0 : +req.query.pagina;
+  let cantidad = req.query.cantidad === undefined? 0 : +req.query.cantidad;
+
+  models.carrera
+    .findAll({
+      attributes: ["id", "nombre"],
+      offset: pagina * cantidad, limit: cantidad
     })
     .then(carreras => res.send(carreras))
     .catch(() => res.sendStatus(500));
