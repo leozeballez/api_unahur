@@ -9,6 +9,18 @@ router.get("/", (req, res) => {
   }).then(materias => res.send(materias)).catch(error => { return next(error)});
 });
 
+//get con paginacion - tuve que asignarle una ruta distinta para que no pise el get anterior
+router.get("/paginadas/", (req, res) => {
+  let pagina = req.query.pagina === undefined? 0 : +req.query.pagina; //esto se hizo así porque devuelve un string en vez de un entero
+  let cantidad = req.query.cantidad === undefined? 0 : +req.query.cantidad;
+
+  models.materias.findAll({ //nombre en plural
+    attributes: ["id","nombre","id_aula"],
+    include:[{as:'Aula-Relacionada', model:models.aula, attributes: ["id","nombre"]}],
+    offset: pagina * cantidad, limit: cantidad
+  }).then(materias => res.send(materias)).catch(error => { return next(error)});
+});
+
 router.post("/", (req, res) => {
   models.materias //nombre en plural
     .create({ nombre: req.body.nombre, id_aula: req.body.id_aula }) //se agrega el id_aula
