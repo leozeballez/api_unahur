@@ -1,13 +1,31 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
+const jwtAuth = require("../jwtAuth"); //autenticacion de token
+var jwt = require("jsonwebtoken"); //libreria de token
 
-router.get("/", (req, res) => {
+router.get("/", jwtAuth, (req, res) => { //el jwtAuth acá no permite consultar si no se envía el código token
   models.aula
     .findAll({
       attributes: ["id", "nombre"]
     })
-    .then(aulas => res.send(aulas))
+    .then(aulas => {
+      res.send(aulas)
+    } )
+    .catch(() => res.sendStatus(500));
+});
+
+router.get("/token/", (req, res) => { //este Get es solo para que devuelva el codigo token (ya que no se implementó una lista de usuarios válidos)
+  models.aula
+    .findAll({
+      attributes: ["id", "nombre"]
+    })
+    .then(aulas => {
+      //primer parametro, ingresamos informacion que queremos encriptar
+      //segundo parametro, la llave (donde está el token)
+      let token = jwt.sign({aulas}, process.env.JWT_KEY)
+      res.json({token:token})//esto es para que devuelva el codigo que nos autorizará a consultar el primer get
+    } )
     .catch(() => res.sendStatus(500));
 });
 
